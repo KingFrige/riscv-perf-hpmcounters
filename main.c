@@ -9,13 +9,10 @@
     asm volatile ("csrr %0, " #reg : "=r"(__tmp)); \
     __tmp; })
 
-#define SHOW_PERFCNT(fmt, mhpmcnt) \
-  printf(fmt, (int)(read_csr_safe(mhpmcounter ## mhpmcnt)));
-
 // How many counters do we support? (change for your micro-architecture).
 #define NUM_COUNTERS (32)
 //#define NUM_COUNTERS (32) maximum amount of HPMs is 32
-typedef std::array<long, NUM_COUNTERS> snapshot_t;
+typedef std::array<unsigned long int, NUM_COUNTERS> snapshot_t;
 
 static char const*               counter_names[NUM_COUNTERS];
 static snapshot_t                init_counters;
@@ -32,40 +29,40 @@ enum StatState
 
 int topDownCntShow(snapshot_t hpmcounters){
 
-  printf("instret:%d\n",               hpmcounters[ 0]);
-  printf("cycles:%d\n",                hpmcounters[ 1]);
-  printf("time:%d\n",                  hpmcounters[ 2]);
+  printf("instret:%ld\n",               hpmcounters[ 0]);
+  printf("cycles:%ld\n",                hpmcounters[ 1]);
+  printf("time:%ld\n",                  hpmcounters[ 2]);
 
-  printf("slotsIssed:%d\n",            hpmcounters[ 3]);
-  printf("fetchBubbles:%d\n",          hpmcounters[ 4]);
-  printf("branchRetired:%d\n",         hpmcounters[ 5]);
+  printf("slotsIssed:%ld\n",            hpmcounters[ 3]);
+  printf("fetchBubbles:%ld\n",          hpmcounters[ 4]);
+  printf("branchRetired:%ld\n",         hpmcounters[ 5]);
 
-  printf("badResteers:%d\n",           hpmcounters[ 6]);
-  printf("recoveryCycles:%d\n",        hpmcounters[ 7]);
-  printf("unknowBanchCycles:%d\n",     hpmcounters[ 8]);
-  printf("brMispredRetired:%d\n",      hpmcounters[ 9]);
-  printf("machineClears:%d\n",         hpmcounters[10]);
-  printf("iCacheStallCycles:%d\n",     hpmcounters[11]);
-  printf("iTLBStallCycles:%d\n",       hpmcounters[12]);
-  printf("memStallsAnyLoad:%d\n",      hpmcounters[13]);
-  printf("memStallsStores:%d\n",       hpmcounters[14]);
+  printf("badResteers:%ld\n",           hpmcounters[ 6]);
+  printf("recoveryCycles:%ld\n",        hpmcounters[ 7]);
+  printf("unknowBanchCycles:%ld\n",     hpmcounters[ 8]);
+  printf("brMispredRetired:%ld\n",      hpmcounters[ 9]);
+  printf("machineClears:%ld\n",         hpmcounters[10]);
+  printf("iCacheStallCycles:%ld\n",     hpmcounters[11]);
+  printf("iTLBStallCycles:%ld\n",       hpmcounters[12]);
+  printf("memStallsAnyLoad:%ld\n",      hpmcounters[13]);
+  printf("memStallsStores:%ld\n",       hpmcounters[14]);
 
-  printf("exeport0Utilization:%d\n",   hpmcounters[15]);
-  printf("exeport1Utilization:%d\n",   hpmcounters[16]);
-  printf("exeport2Utilization:%d\n",   hpmcounters[17]);
-  printf("exeport3Utilization:%d\n",   hpmcounters[18]);
-  printf("exeport4Utilization:%d\n",   hpmcounters[19]);
-  printf("noOpsExecutedCycles:%d\n",   hpmcounters[20]);
-  printf("fewOpsExecutedCycles:%d\n",  hpmcounters[21]);
-  printf("arithDivider_active:%d\n",   hpmcounters[22]);
+  printf("exeport0Utilization:%ld\n",   hpmcounters[15]);
+  printf("exeport1Utilization:%ld\n",   hpmcounters[16]);
+  printf("exeport2Utilization:%ld\n",   hpmcounters[17]);
+  printf("exeport3Utilization:%ld\n",   hpmcounters[18]);
+  printf("exeport4Utilization:%ld\n",   hpmcounters[19]);
+  printf("noOpsExecutedCycles:%ld\n",   hpmcounters[20]);
+  printf("fewOpsExecutedCycles:%ld\n",  hpmcounters[21]);
+  printf("arithDivider_active:%ld\n",   hpmcounters[22]);
 
-  printf("robStallCycles:%d\n",        hpmcounters[29]);
-  printf("memStallsL1Miss:%d\n",       hpmcounters[30]);
-  printf("fpRetired:%d\n",             hpmcounters[31]);
+  printf("robStallCycles:%ld\n",        hpmcounters[29]);
+  printf("memStallsL1Miss:%ld\n",       hpmcounters[30]);
+  printf("fpRetired:%ld\n",             hpmcounters[31]);
 
-  printf("memLatency:%d\n", 0);
-  printf("memStallsL2Miss:%d\n", 0);
-  printf("memStallsL3Miss:%d\n", 0);
+  printf("memLatency:%ld\n", 0);
+  printf("memStallsL2Miss:%ld\n", 0);
+  printf("memStallsL3Miss:%ld\n", 0);
 
   return 0;
 }
@@ -90,7 +87,7 @@ static int cnt_stats(int enable)
    snapshot_t snapshot;
 #define READ_CTR(name) do { \
       if (i < NUM_COUNTERS) { \
-         long csr = read_csr_safe(name); \
+         unsigned long int csr = read_csr_safe(name); \
          tmp_counters[i] = csr; \
          if (enable == INIT)   { init_counters[i] = csr; finish_counters[i] = 0; counter_names[i] = #name; } \
          if (enable == FINISH) { finish_counters[i] = csr - init_counters[i]; } \
@@ -138,13 +135,13 @@ static int cnt_stats(int enable)
 #undef READ_CTR
    if (enable == FINISH) { 
 
-     // printf("init_counter\n\n");
-     // topDownCntShow(init_counters);
-     // printf("====================================\n\n");
-     // printf("tmp_counter\n\n");
-     // topDownCntShow(tmp_counters);
-     // printf("====================================\n\n");
-     // printf("finish_counter\n\n");
+     printf("init_counter\n\n");
+     topDownCntShow(init_counters);
+     printf("====================================\n\n");
+     printf("tmp_counter\n\n");
+     topDownCntShow(tmp_counters);
+     printf("====================================\n\n");
+     printf("finish_counter\n\n");
 
      topDownCntShow(finish_counters);
 
