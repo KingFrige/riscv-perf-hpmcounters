@@ -135,13 +135,13 @@ static int cnt_stats(int enable)
 #undef READ_CTR
    if (enable == FINISH) { 
 
-     printf("init_counter\n\n");
-     topDownCntShow(init_counters);
-     printf("====================================\n\n");
-     printf("tmp_counter\n\n");
-     topDownCntShow(tmp_counters);
-     printf("====================================\n\n");
-     printf("finish_counter\n\n");
+     // printf("init_counter\n\n");
+     // topDownCntShow(init_counters);
+     // printf("====================================\n\n");
+     // printf("tmp_counter\n\n");
+     // topDownCntShow(tmp_counters);
+     // printf("====================================\n\n");
+     // printf("finish_counter\n\n");
 
      topDownCntShow(finish_counters);
 
