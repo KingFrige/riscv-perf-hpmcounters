@@ -12,7 +12,7 @@
 // How many counters do we support? (change for your micro-architecture).
 #define NUM_COUNTERS (32)
 //#define NUM_COUNTERS (32) maximum amount of HPMs is 32
-typedef std::array<unsigned long int, NUM_COUNTERS> snapshot_t;
+typedef std::array<long, NUM_COUNTERS> snapshot_t;
 
 static char const*               counter_names[NUM_COUNTERS];
 static snapshot_t                init_counters;
@@ -87,7 +87,7 @@ static int cnt_stats(int enable)
    snapshot_t snapshot;
 #define READ_CTR(name) do { \
       if (i < NUM_COUNTERS) { \
-         unsigned long int csr = read_csr_safe(name); \
+         long csr = read_csr_safe(name); \
          tmp_counters[i] = csr; \
          if (enable == INIT)   { init_counters[i] = csr; finish_counters[i] = 0; counter_names[i] = #name; } \
          if (enable == FINISH) { finish_counters[i] = csr - init_counters[i]; } \
